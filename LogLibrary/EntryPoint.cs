@@ -10,6 +10,7 @@ namespace LogLibrary
     [BepInDependency("dev.gtfomodding.gtfo-api", BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency("dev.flaff.gtfo.CustomMenuBarButtons", BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency(MTFO.MTFO.GUID, BepInDependency.DependencyFlags.SoftDependency)]
+    [BepInDependency("MTFO.Extension.PartialBlocks", BepInDependency.DependencyFlags.SoftDependency)]
     internal class EntryPoint : BasePlugin
     {
         private Harmony _Harmony = null;

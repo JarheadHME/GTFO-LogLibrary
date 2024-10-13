@@ -11,6 +11,7 @@ using GTFO.API.Extensions;
 using System.Linq;
 using BepInEx.Unity.IL2CPP;
 using System.Reflection;
+using System.Text.Json;
 
 namespace LogLibrary;
 internal sealed class CM_PageLogLibrary : MonoBehaviour
@@ -428,9 +429,23 @@ internal sealed class CM_PageLogLibrary : MonoBehaviour
         ReadLogInfosFile(defaultPath);
     }
 
+    // just in case i add some sort of OnGameDataInit thing
+    private static bool HasAddedPDConverter = false;
+    public static readonly JsonSerializerOptions JsonSettings = new JsonSerializerOptions()
+    {
+        ReadCommentHandling = JsonCommentHandling.Skip,
+        PropertyNameCaseInsensitive = true,
+    };
     public static void ReadLogInfosFile(string path)
     {
-        LogInfos = GTFO.API.JSON.JsonSerializer.Deserialize<LogsFileDTO>(File.ReadAllText(path));
+        if (PDAPIWrapper.HasPData && !HasAddedPDConverter)
+        {
+            JsonSettings.Converters.Add(PDAPIWrapper.PersistentIDConverter);
+            HasAddedPDConverter = true;
+        }
+
+
+        LogInfos = GTFO.API.JSON.JsonSerializer.Deserialize<LogsFileDTO>(File.ReadAllText(path), JsonSettings);
         if (string.IsNullOrEmpty(LogInfos.Name))
         {
             Logger.Error("'Name' field in provided Log Info file is unset, please contact your rundown developer or access `(RundownFolder)/Custom/LogLibrary/Logs.json` to set it.\nFor now, it will use 'UNSET'.");
